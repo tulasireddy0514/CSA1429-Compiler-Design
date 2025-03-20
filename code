@@ -1,0 +1,49 @@
+from collections import defaultdict
+import re
+
+# Function to parse a chemical formula and count elements
+def parse_formula(formula):
+    elements = defaultdict(int)
+    matches = re.findall(r'([A-Z][a-z])(\d)', formula)  # Match elements and their counts
+    for element, count in matches:
+        elements[element] += int(count) if count else 1  # Default count is 1 if not specified
+    return elements
+
+# Function to check if a chemical reaction is balanced
+def is_balanced(reactants, products):
+    reactant_elements = defaultdict(int)
+    product_elements = defaultdict(int)
+
+    # Count elements in reactants
+    for reactant in reactants:
+        for element, count in parse_formula(reactant).items():
+            reactant_elements[element] += count
+
+    # Count elements in products
+    for product in products:
+        for element, count in parse_formula(product).items():
+            product_elements[element] += count
+
+    return reactant_elements == product_elements  # Return True if balanced, False otherwise
+
+# Main function to take input and check reaction balance
+def check_reaction(reaction):
+    try:
+        reactants, products = reaction.split("->")  # Split reaction into reactants and products
+        reactants = [r.strip() for r in reactants.split("+")]
+        products = [p.strip() for p in products.split("+")]
+
+        if is_balanced(reactants, products):
+            return "The chemical reaction is balanced."
+        else:
+            return "The chemical reaction is NOT balanced. Adjust coefficients accordingly."
+    except Exception as e:
+        return f"Error: Invalid reaction format. {e}"
+
+# Example input reaction
+reaction = "H2 + O2 -> H2O"
+output = check_reaction(reaction)
+
+# Display output
+print("Reaction:", reaction)
+print("Result:", output)
